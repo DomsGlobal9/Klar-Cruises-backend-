@@ -7,8 +7,8 @@ const connectDB = require('./config/db');
 require('./models'); // Register all Mongoose models
 const routes = require('./routes');
 
-// Connect to MongoDB
-connectDB();
+// Remove global connection
+// connectDB();
 
 const app = express();
 
@@ -21,7 +21,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API Routes
-app.use('/api', routes);
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB(); // Ensure DB is connected before handling any API routes
+    next();
+  } catch (err) {
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+}, routes);
 
 // Health check
 app.get('/health', (req, res) => {
