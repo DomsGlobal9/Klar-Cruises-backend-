@@ -8,10 +8,16 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/aureli
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    // Only listen if not running in a serverless environment like Vercel
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    }
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
   });
+
+// Export the Express API for Vercel Serverless Functions
+module.exports = app;
