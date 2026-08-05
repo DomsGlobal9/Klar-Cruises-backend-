@@ -20,6 +20,12 @@ const enquirySchema = new mongoose.Schema(
     receiveOffers:  { type: Boolean, default: false },
 
     // Tracking
+
+    // Which surface produced the lead — the concierge search, one of the
+    // intelligence tools, or the enquiry form. Free-form rather than an enum
+    // so a new tool can start reporting without a schema migration.
+    source: { type: String, trim: true, default: 'enquiry-page' },
+
     status: {
       type: String,
       enum: ['new', 'contacted', 'converted', 'closed'],
@@ -31,6 +37,7 @@ const enquirySchema = new mongoose.Schema(
 
 enquirySchema.index({ email: 1 });
 enquirySchema.index({ status: 1 });
+enquirySchema.index({ source: 1 });
 enquirySchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Enquiry', enquirySchema);

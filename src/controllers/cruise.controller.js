@@ -1,4 +1,24 @@
 const cruiseService = require('../services/cruise.service');
+const matchService = require('../services/match.service');
+
+/**
+ * GET /api/cruises/match?q=...
+ * Matches a plain-English request against the catalogue.
+ */
+exports.matchCruises = async (req, res, next) => {
+  try {
+    const query = (req.query.q || '').trim();
+    if (!query) {
+      return res.status(400).json({ error: 'A search query is required' });
+    }
+
+    const limit = Math.min(parseInt(req.query.limit, 10) || 3, 10);
+    const result = await matchService.matchCruises(query, limit);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.getCruises = async (req, res, next) => {
   try {
